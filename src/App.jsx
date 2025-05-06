@@ -16,7 +16,8 @@ export default function App() {
     async function fetchData() {
       try {
         setLoading(true);
-        const res = await axios.get("/api/sales");
+        const res = await axios.get("/.netlify/functions/sales");
+
         const data = res.data;
 
         const last7Days = data.history || [];
