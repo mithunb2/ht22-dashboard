@@ -32,25 +32,20 @@ export default function App() {
         <button onClick={() => setTab("custom")} className="px-4 py-2 rounded bg-gray-100">Custom Range</button>
       </div>
       {tab === "7days" && (
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Last 7 Days Profit</h2>
-          <ul className="space-y-1">
-            {data.map((day) => (
-              <li key={day.date} className="border-b py-1">
-                {day.date}: ${day.profit.toFixed(2)}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul>
+          {data.map((day) => (
+            <li key={day.date}>{day.date}: ${day.profit.toFixed(2)}</li>
+          ))}
+        </ul>
       )}
       {tab === "realtime" && (
-        <div className="text-xl font-semibold text-green-600">
+        <div className="text-xl text-green-600 font-semibold">
           Today's Real-Time Profit: ${todayProfit?.toFixed(2)}
         </div>
       )}
       {tab === "custom" && (
-        <div className="text-gray-600 italic">
-          Custom range coming soon in live version.
+        <div className="italic text-gray-500">
+          Custom range coming soon...
         </div>
       )}
     </div>
