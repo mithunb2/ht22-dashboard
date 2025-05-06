@@ -1,37 +1,38 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-
-const mockData = {
-  today: {
-    profit: 412.35,
-    adSpend: 100,
-    revenue: 620,
-  },
-  history: [
-    { date: "2025-04-23", profit: 240, adSpend: 70, revenue: 480 },
-    { date: "2025-04-24", profit: 320, adSpend: 85, revenue: 530 },
-    { date: "2025-04-25", profit: 190, adSpend: 60, revenue: 360 },
-    { date: "2025-04-26", profit: 410, adSpend: 90, revenue: 600 },
-    { date: "2025-04-27", profit: 360, adSpend: 75, revenue: 520 },
-    { date: "2025-04-28", profit: 270, adSpend: 62, revenue: 450 },
-    { date: "2025-04-29", profit: 390, adSpend: 88, revenue: 590 },
-  ],
-};
 
 export default function App() {
   const [tab, setTab] = useState("7days");
   const [today, setToday] = useState(null);
   const [history, setHistory] = useState([]);
-
-  useEffect(() => {
-    setToday(mockData.today);
-    setHistory(mockData.history);
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   const getROAS = (revenue, adSpend) => (adSpend ? (revenue / adSpend).toFixed(2) : "0.00");
-  const getCPP = (revenue, adSpend) => (revenue ? (adSpend / revenue).toFixed(2) : "0.00");
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await axios.get("/api/sales");
+        const data = res.data;
+
+        const last7Days = data.history || [];
+        const todayData = data.today || null;
+
+        setToday(todayData);
+        setHistory(last7Days);
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen font-sans">
@@ -50,8 +51,9 @@ export default function App() {
         </button>
       </div>
 
-      {/* 7 Day Chart */}
-      {tab === "7days" && (
+      {loading && <p>Loading data...</p>}
+
+      {!loading && tab === "7days" && history.length > 0 && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white rounded shadow p-4">
@@ -99,8 +101,7 @@ export default function App() {
         </>
       )}
 
-      {/* Real-time */}
-      {tab === "realtime" && today && (
+      {!loading && tab === "realtime" && today && (
         <div className="bg-white p-6 rounded shadow mt-6 space-y-3">
           <h2 className="text-xl font-bold text-gray-700">Today's Stats</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -112,8 +113,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Coming soon */}
-      {tab === "custom" && (
+      {!loading && tab === "custom" && (
         <div className="italic text-gray-400 mt-6">Custom date picker coming soon...</div>
       )}
     </div>
