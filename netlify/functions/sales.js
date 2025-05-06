@@ -1,6 +1,5 @@
 // netlify/functions/sales.js
 const axios = require("axios");
-require("dotenv\config");
 
 const SHOP_DOMAIN = "ehs7st-za.myshopify.com";
 const SHOPIFY_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
